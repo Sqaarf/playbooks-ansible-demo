@@ -8,3 +8,4 @@
   - name: Print the previous commmand output
     debug:
       var: result.stdout
+      verbosity: 2
