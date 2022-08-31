@@ -1,0 +1,39 @@
+---
+- name: File transfer between a Ubuntu VM and a Windows VM
+  hosts: all
+  tasks:
+    - name: Create temporary directory on Windows Host
+      win_file:
+        path: C:\ansible_tmp
+        state: directory
+      when: "'opteamwindowsservers' in group_names"
+
+    - name: Fetch powershell script from Ubuntu host to Controller
+      fetch:
+        src: /home/azureuser/script.ps1
+        dest: /tmp/ansible_tmp/
+        flat: yes
+      when: "'opteamlinuxservers' in group_names"
+
+    - name: Copy powershell script from Controller to Windows host
+      win_copy:
+        src: /tmp/ansible_tmp/script.ps1
+        dest: C:\ansible_tmp\
+      when: "'opteamwindowsservers' in group_names"
+    
+    - name: Execute powershell script in Windows host
+      win_command: powershell.exe C:\ansible_tmp\script.ps1 
+      when: "'opteamwindowsservers' in group_names"
+    
+    - name: Fetch result file on Ansible controller host
+      fetch:
+        src: C:\ansible_tmp\result.txt
+        dest: /tmp/ansible_tmp/
+        flat: yes
+      when: "'opteamwindowsservers' in group_names"
+      
+    - name: Remove temporary directory on Windows Host
+      win_file:
+        path: C:\ansible_tmp
+        state: absent
+      when: "'opteamwindowsservers' in group_names"
