@@ -2,10 +2,10 @@
 - hosts: opteamwindowsservers 
   gather_facts: True
   tasks:
-  - name: Get all process from windows host
+  - name: Get all processes from windows host
     win_shell: Get-Process | ConvertTo-Json
     register: result
   - name: Print the previous commmand output
     debug:
       var: result.stdout
-      verbosity: 2
+      verbosity: 3
